@@ -1,0 +1,10 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "bases": "./tp5/b_bases.py:graph",
+    "agentic_rag": "./tp5/b_rag.py:graph",
+    "sav": "./tp5/d_orchestrateur.py:graph"
+  },
+  "env": ".env"
+}
+

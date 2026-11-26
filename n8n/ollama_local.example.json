@@ -1,0 +1,10 @@
+[
+  {
+    "id": "TP5OllamaLocal01",
+    "name": "TP5 Ollama local",
+    "type": "ollamaApi",
+    "data": {
+      "baseUrl": "http://host.docker.internal:11434"
+    }
+  }
+]

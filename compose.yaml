@@ -1,0 +1,31 @@
+services:
+  mcp:
+    build:
+      context: .
+      dockerfile: n8n/Dockerfile.mcp
+    environment:
+      MCP_BIND: 0.0.0.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8001), 2).close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.15.0
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      GENERIC_TIMEZONE: Africa/Casablanca
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - tp5_n8n:/home/node/.n8n
+      - ./n8n:/tp5:ro
+    depends_on:
+      mcp:
+        condition: service_healthy
+
+volumes:
+  tp5_n8n:

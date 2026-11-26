@@ -1,0 +1,5 @@
+FROM python:3.11-slim
+WORKDIR /app
+RUN pip install --no-cache-dir "mcp==1.30.0"
+COPY tp5/c_server.py .
+CMD ["python", "c_server.py"]

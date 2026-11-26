@@ -1,0 +1,174 @@
+{
+  "name": "TP5 — Agent SAV avec MCP",
+  "id": "TP5SAVAgentMCP01",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f4292e47-bc2a-4a55-a0ff-000000000001",
+      "name": "Chat SAV",
+      "webhookId": "f4292e47-bc2a-4a55-a0ff-000000000008"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Tu es l’assistant SAV. Pour une demande d’horaires, appelle l’outil horaires_sav. Pour un devis, appelle estimer_devis avec les montants en MAD. Réponds en français à partir du résultat de l’outil.",
+          "maxIterations": 4,
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        0
+      ],
+      "id": "f4292e47-bc2a-4a55-a0ff-000000000002",
+      "name": "Agent SAV"
+    },
+    {
+      "parameters": {
+        "model": "qwen3-vl:2b-instruct",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        420,
+        228
+      ],
+      "id": "f4292e47-bc2a-4a55-a0ff-000000000003",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "TP5OllamaLocal01",
+          "name": "TP5 Ollama local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://mcp:8001/mcp",
+        "serverTransport": "httpStreamable",
+        "authentication": "none",
+        "include": "all",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        228
+      ],
+      "id": "f4292e47-bc2a-4a55-a0ff-000000000004",
+      "name": "Serveur MCP SAV"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -220
+      ],
+      "id": "f4292e47-bc2a-4a55-a0ff-000000000005",
+      "name": "Test manuel"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f4292e47-bc2a-4a55-a0ff-000000000007",
+              "name": "chatInput",
+              "value": "Appelle horaires_sav. Quels sont les horaires d’ouverture du SAV ?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        -220
+      ],
+      "id": "f4292e47-bc2a-4a55-a0ff-000000000006",
+      "name": "Question de test"
+    }
+  ],
+  "connections": {
+    "Chat SAV": {
+      "main": [
+        [
+          {
+            "node": "Agent SAV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test manuel": {
+      "main": [
+        [
+          {
+            "node": "Question de test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question de test": {
+      "main": [
+        [
+          {
+            "node": "Agent SAV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent SAV",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Serveur MCP SAV": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agent SAV",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
